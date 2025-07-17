@@ -1,4 +1,4 @@
-name: .NET Pipeline
+name: .NET Pipeline (Conditional)
 
 on:
   push:
@@ -12,11 +12,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Restore dependencies
+      - name: Restore dependencies (skip if no .csproj or .sln)
         run: |
+          if ls **/*.csproj **/*.sln 1> /dev/null 2>&1; then
+            echo "Project/solution file found. Running restore..."
 
-      - name: Build
+      - name: Build (skip if no .csproj or .sln)
         run: |
+          if ls **/*.csproj **/*.sln 1> /dev/null 2>&1; then
+            echo "Project/solution file found. Running build..."
 
-      - name: Test
+      - name: Test (skip if no .csproj or .sln)
         run: |
+          if ls **/*.csproj **/*.sln 1> /dev/null 2>&1; then
+            echo "Project/solution file found. Running tests..."
