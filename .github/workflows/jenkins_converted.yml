@@ -1,25 +1,21 @@
 name: .NET Pipeline
-
 on:
   push:
     branches:
-      - main
-
+    - main
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Restore dependencies
+      run: 'dotnet restore
 
-      - name: Restore dependencies
-        run: |
-          dotnet restore
+        '
+    - name: Build
+      run: 'dotnet build --configuration Release
 
-      - name: Build
-        run: |
-          dotnet build --configuration Release
-
-      - name: Test
-        run: |
-          dotnet test --no-build --verbosity normal
+        '
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
