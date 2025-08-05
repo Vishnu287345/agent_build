@@ -1,57 +1,13 @@
-name: Validate ServiceNow
+name: Example Workflow
 
-description: Validate ServiceNow ticket
+on: [push]
 
-inputs:
-  serviceNowApiUrl: 
-    description: ServiceNow API URL
-    required: true
-  serviceNowCredId: 
-    description: ServiceNow credential ID
-    required: true
-
-runs:
-  using: 'composite'
-
-  steps:
-- name: Validate ServiceNow ticket
-      run: |
-        in_ticket_window=false
-        max_attempts=3
-        retry_delay=10
-
-        while [ $in_ticket_window = false ]; do
-          attempt=0
-          while [ $attempt -lt $max_attempts ]; do
-            # Verify ticket prior to approval
-            response=$(curl -s -X GET \
-              https://${GITHUB_ACTOR}:${{ secrets.SERVICE_NOW_CRED_ID }}@${{ inputs.serviceNowApiUrl }}/api/now/table/ticket \
-              -H 'Content-Type: application/json' \
-              -H 'Accept: application/json')
-
-            if [ $? -eq 0 ]; then
-              # Get ticket details to display
-              ticket_details=$(curl -s -X GET \
-                https://${GITHUB_ACTOR}:${{ secrets.SERVICE_NOW_CRED_ID }}@${{ inputs.serviceNowApiUrl }}/api/now/table/ticket \
-                -H 'Content-Type: application/json' \
-                -H 'Accept: application/json')
-
-              in_ticket_window=true
-              break
-            else
-              attempt=$((attempt + 1))
-              echo "Attempt $attempt failed. Retrying in $retry_delay seconds..."
-              sleep $retry_delay
-            fi
-          done
-
-          if [ $attempt -eq $max_attempts ]; then
-            echo "ServiceNow ticket validation failed or validation was aborted."
-            exit 1
-          fi
-        done
-
-        echo "Validation successful!"
-        echo "::set-output name=validationResult::success"
-
-      shell: bash
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+- name: Checkout code
+        uses: actions/checkout@v2
+- name: Use github context
+        run: |
+          echo ${{ github.repository }}
